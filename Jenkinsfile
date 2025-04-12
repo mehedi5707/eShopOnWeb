@@ -19,12 +19,14 @@ pipeline {
         }
 
         stage('Push to DockerHub') {
-            steps {
-                withDockerRegistry(credentialsId: 'ForDocker2') {
-                    sh 'docker push your-dockerhub-username/eshoponweb:latest'
-                }
+    steps {
+        script {
+            withDockerRegistry([credentialsId: 'dockerhub-creds', url: 'https://index.docker.io/v1/']) {
+                docker.image('mehedi5707/eshoponweb').push('latest')
             }
         }
+    }
+}
 
         stage('Deploy to Kubernetes') {
             steps {

@@ -22,8 +22,8 @@ pipeline {
     steps {
         script {
             withDockerRegistry([credentialsId: 'dockerhub-creds', url: 'https://index.docker.io/v1/']) {
-                docker.image('mehedi5707/eshoponweb').push('latest')
-            }
+    docker.image('mehedi5707/eshoponweb').push('latest')
+}
         }
     }
 }

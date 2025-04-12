@@ -14,19 +14,21 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t your-dockerhub-username/eshoponweb:latest .'
+                script {
+                    docker.build('mehedi5707/eshoponweb:latest')
+                }
             }
         }
 
         stage('Push to DockerHub') {
-    steps {
-        script {
-            withDockerRegistry([credentialsId: 'dockerhub-creds', url: 'https://index.docker.io/v1/']) {
-    docker.image('mehedi5707/eshoponweb').push('latest')
-}
+            steps {
+                script {
+                    withDockerRegistry([credentialsId: 'dockerhub-creds', url: 'https://index.docker.io/v1/']) {
+                        docker.image('mehedi5707/eshoponweb:latest').push('latest')
+                    }
+                }
+            }
         }
-    }
-}
 
         stage('Deploy to Kubernetes') {
             steps {

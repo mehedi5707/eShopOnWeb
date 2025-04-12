@@ -20,7 +20,7 @@ pipeline {
 
         stage('Push to DockerHub') {
             steps {
-                withDockerRegistry(credentialsId: 'dockerhub-creds') {
+                withDockerRegistry(credentialsId: 'ForDocker2') {
                     sh 'docker push your-dockerhub-username/eshoponweb:latest'
                 }
             }

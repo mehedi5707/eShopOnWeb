@@ -13,11 +13,10 @@ pipeline {
         }
 
         stage('Build Docker Image') {
-            steps {
-                script {
-                    docker.build('mehedi5707/eshoponweb:latest')
-                }
-            }
+    steps {
+        sh 'docker build -t mehedi5707/eshoponweb:latest ${WORKSPACE}'
+    }
+}
         }
 
         stage('Push to DockerHub') {

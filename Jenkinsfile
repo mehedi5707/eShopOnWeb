@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-creds')
+        IMAGE_NAME = 'mehedi5707/eshoponweb'
     }
 
     stages {
@@ -13,17 +14,16 @@ pipeline {
         }
 
         stage('Build Docker Image') {
-    steps {
-        sh 'docker build -t mehedi5707/eshoponweb:latest ${WORKSPACE}'
-    }
-}
+            steps {
+                sh 'docker build -t ${IMAGE_NAME}:latest ${WORKSPACE}'
+            }
         }
 
         stage('Push to DockerHub') {
             steps {
                 script {
-                    withDockerRegistry([credentialsId: 'dockerhub-creds', url: 'https://index.docker.io/v1/']) {
-                        docker.image('mehedi5707/eshoponweb:latest').push('latest')
+                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-creds') {
+                        docker.image("${IMAGE_NAME}:latest").push('latest')
                     }
                 }
             }
@@ -32,6 +32,12 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 sh 'kubectl apply -f k8s/deployment.yaml'
+            }
+        }
+
+        stage('Verify Deployment') {
+            steps {
+                sh 'kubectl rollout status deployment/eshoponweb-deployment'
             }
         }
     }

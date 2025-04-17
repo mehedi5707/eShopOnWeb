@@ -24,10 +24,12 @@ pipeline {
         }
 
         stage('Deploy to Kubernetes') {
-            steps {
-                sh 'kubectl apply -f deployment.yaml'
-            }
-        }
+  steps {
+    withEnv(["KUBECONFIG=/root/.kube/config"]) {
+      sh 'kubectl apply -f deployment.yaml'
+    }
+  }
+}
 
         stage('Verify Deployment') {
             steps {

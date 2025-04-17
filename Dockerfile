@@ -1,18 +1,13 @@
-# Build stage
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
-WORKDIR /app
+# Use .NET 8.0 SDK for build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 
-# Copy everything
+WORKDIR /app
 COPY . ./
-
-# Restore using solution or specific .csproj
 RUN dotnet restore eShopOnWeb.sln
+RUN dotnet publish src/Web/Web.csproj -c Release -o out
 
-# Publish the web project
-RUN dotnet publish src/Web/eshoponweb.Web.csproj -c Release -o /out
-
-# Runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:7.0
+# Use .NET 8.0 ASP.NET runtime for final image
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
-COPY --from=build /out .
-ENTRYPOINT ["dotnet", "eshoponweb.Web.dll"]
+COPY --from=build /app/out ./
+ENTRYPOINT ["dotnet", "Web.dll"]

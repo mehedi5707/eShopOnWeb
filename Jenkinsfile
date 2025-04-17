@@ -33,7 +33,7 @@ pipeline {
 
         stage('Verify Deployment') {
             steps {
-                sh 'kubectl rollout status deployment/eshoponweb-deployment'
+                sh 'kubectl rollout status deployment/my-app'
             }
         }
     }

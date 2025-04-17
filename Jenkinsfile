@@ -3,25 +3,22 @@ pipeline {
 
     environment {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-creds')
+        IMAGE_NAME = 'mehedi5707/eshoponweb'
     }
 
     stages {
-        stage('Checkout') {
-            steps {
-                git credentialsId: 'ForJenkins2', url: 'https://github.com/mehedi5707/eShopOnWeb.git'
-            }
-        }
-
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t your-dockerhub-username/eshoponweb:latest .'
+                sh 'docker build -t ${IMAGE_NAME}:latest ${WORKSPACE}'
             }
         }
 
         stage('Push to DockerHub') {
             steps {
-                withDockerRegistry(credentialsId: 'dockerhub-creds') {
-                    sh 'docker push your-dockerhub-username/eshoponweb:latest'
+                script {
+                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-creds') {
+                        docker.image("${IMAGE_NAME}:latest").push('latest')
+                    }
                 }
             }
         }
@@ -30,6 +27,18 @@ pipeline {
             steps {
                 sh 'kubectl apply -f k8s/deployment.yaml'
             }
+        }
+
+        stage('Verify Deployment') {
+            steps {
+                sh 'kubectl rollout status deployment/eshoponweb-deployment'
+            }
+        }
+    }
+
+    post {
+        always {
+            cleanWs()
         }
     }
 }
